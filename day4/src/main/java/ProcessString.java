@@ -19,11 +19,20 @@ public class ProcessString {
             i++;
         }
         grid = new char[lineCount][count];
+        char[] inputArr2 = new char[100];
         int arrCount = 0;
+        for(int p = 0; p < inputArr2.length; p++){
+            if(inputArr[arrCount] == 'X' || inputArr[arrCount] == 'M' || inputArr[arrCount] == 'A' || inputArr[arrCount] == 'S'){
+                inputArr2[p] = inputArr[arrCount];
+            }
+            arrCount++;
+        }
+        System.out.println(inputArr2);
+        arrCount = 0;
         for(int n = 0; n < grid.length; n++){
             for(int m = 0; m < grid[0].length; m++){
-                System.out.println(inputArr[arrCount]);
-                grid[n][m] = inputArr[arrCount];
+                //System.out.println(inputArr[arrCount]);
+                grid[n][m] = inputArr2[arrCount];
                 arrCount++;
             }
         }
@@ -34,7 +43,7 @@ public class ProcessString {
         int count = 0;
         for(int i = 0; i < grid.length; i++){
             for(int n = 0; n < grid[0].length; n++){
-                //System.out.println(grid[i][n]);
+                System.out.println(grid[i][n]);
                 if(grid[i][n] == 'X'){
 
                     if(n < grid[0].length - 3 && grid[i][n + 1] == 'M' && grid[i][n + 2] == 'A' && grid[i][n + 3] == 'S'){
