@@ -7,6 +7,6 @@ public class Main {
         int lineCount = inputStream.lineCount;
         ProcessString processor = new ProcessString(input);
         processor.lineCount = lineCount;
-        processor.searchString();
+        processor.convertInputToGrid();
     }
 }
