@@ -46,6 +46,25 @@ public class ProcessString {
     }
 
     private void checkOrdering(){
-        
+        int sum = 0;
+        for(int i = 0; i < printingOrderList.size(); i++){
+            int correct = 0;
+            for(int n = 0; n < printingOrderList.get(i).size(); n++){
+                List<Integer> updateOrder = printingRuleMap.get(printingOrderList.get(i).get(n));
+                if(updateOrder != null){
+                    for(int p = n + 1; p < printingOrderList.get(i).size(); p++){
+                        if(updateOrder.contains(printingOrderList.get(i).get(p))){
+                            correct++;
+                        }
+                    }
+                }
+            }
+            System.out.println(correct);
+            int size = printingOrderList.get(i).size();
+            if(correct == (size * (size + 1) / 2 - size)){
+                sum = sum + printingOrderList.get(i).get(printingOrderList.get(i).size() / 2);
+            }
+        }
+        System.out.println(sum);
     }
 }
