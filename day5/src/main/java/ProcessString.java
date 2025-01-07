@@ -42,7 +42,7 @@ public class ProcessString {
                 printingOrderList.add(updateOrder);
             }
         }
-        checkOrdering();
+        correctOrdering();
     }
 
     private void checkOrdering(){
@@ -59,12 +59,57 @@ public class ProcessString {
                     }
                 }
             }
-            System.out.println(correct);
             int size = printingOrderList.get(i).size();
             if(correct == (size * (size + 1) / 2 - size)){
                 sum = sum + printingOrderList.get(i).get(printingOrderList.get(i).size() / 2);
             }
         }
         System.out.println(sum);
+    }
+
+    private void correctOrdering(){
+        List<Integer> incorrect = new ArrayList<>();
+        for(int i = 0; i < printingOrderList.size(); i++){
+            for(int n = 0; n < printingOrderList.get(i).size(); n++){
+                List<Integer> updateOrder = printingRuleMap.get(printingOrderList.get(i).get(n));
+                if(updateOrder != null){
+                    for(int p = n + 1; p < printingOrderList.get(i).size(); p++){
+                        if(!updateOrder.contains(printingOrderList.get(i).get(p))){
+                            incorrect.add(i);
+                        }
+                    }
+                }
+            }
+        }
+        reOrder(incorrect);
+        //System.out.println(sum);
+    }
+
+    private void reOrder(List<Integer> incorrect){
+        List<Integer> newOrder = new ArrayList<>();
+        for(int i : incorrect){
+            newOrder = buildNewOrder(printingOrderList.get(i));
+            checkOrder(newOrder);
+        }
+    }
+
+    private List<Integer> buildNewOrder(List<Integer> oldOrder){
+        List<Integer> newOrder = new ArrayList<>();
+
+        return newOrder;
+    }
+
+    private boolean checkOrder(List<Integer> newOrder){
+        for(int n = 0; n < newOrder.size(); n++){
+            List<Integer> updateOrder = printingRuleMap.get(newOrder.get(n));
+            if(updateOrder != null){
+                for(int p = n + 1; p < newOrder.size(); p++){
+                    if(!updateOrder.contains(newOrder.get(p))){
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
     }
 }
