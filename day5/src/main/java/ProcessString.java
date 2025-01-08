@@ -88,14 +88,18 @@ public class ProcessString {
     private void reOrder(List<Integer> incorrect){
         List<Integer> newOrder = new ArrayList<>();
         for(int i : incorrect){
-            newOrder = buildNewOrder(printingOrderList.get(i));
+            newOrder = buildNewOrder(printingOrderList.get(i), newOrder);
             checkOrder(newOrder);
         }
     }
 
-    private List<Integer> buildNewOrder(List<Integer> oldOrder){
-        List<Integer> newOrder = new ArrayList<>();
-
+    private List<Integer> buildNewOrder(List<Integer> oldOrder, List<Integer> newOrder){
+        for(int i = 0; i < oldOrder.size(); i++){
+            List<Integer> subsequents = printingRuleMap.getOrDefault(oldOrder.get(i), null);
+            if(subsequents == null){
+                newOrder.add(oldOrder.get(i));
+            }
+        }
         return newOrder;
     }
 
