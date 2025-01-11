@@ -14,10 +14,15 @@ public class ProcessString {
     private int x;
     private int y;
     private List<List<Integer>> visited;
+    private List<List<Integer>> visited2;
     private int direction;
+    private char[][] gridSpare;
+    private boolean part2;
     public ProcessString(String fileContents){
         input = fileContents;
         visited = new ArrayList<>();
+        part2 = false;
+        visited2 = new ArrayList<>();
     }
     public void convertInputToGrid(){
         char[] inputArr = input.toCharArray();
@@ -27,6 +32,7 @@ public class ProcessString {
             i++;
         }
         grid = new char[lineCount][count];
+        gridSpare = new char[lineCount][count];
         int arrCount = 0;
 
         for(int n = 0; n < grid.length; n++){
@@ -52,6 +58,9 @@ public class ProcessString {
             }
         }
         moveGuard();
+        for(int n = 0; n < grid.length; n++){
+            System.arraycopy(grid[n], 0, gridSpare[n], 0, gridSpare[n].length);
+        }
         placeObstacle();
     }
 
@@ -70,6 +79,7 @@ public class ProcessString {
                         grid[y][x] = '>';
                     }
                 } else{
+                    grid[y][x] = 'X';
                     return count + 1;
                 }
             } else if(grid[y][x] == '<'){
@@ -84,6 +94,7 @@ public class ProcessString {
                         grid[y][x] = '^';
                     }
                 } else{
+                    grid[y][x] = 'X';
                     return count + 1;
                 }
             } else if(grid[y][x] == '>'){
@@ -98,6 +109,7 @@ public class ProcessString {
                         grid[y][x] = 'v';
                     }
                 } else{
+                    grid[y][x] = 'X';
                     return count + 1;
                 }
             } else if(grid[y][x] == 'v'){
@@ -112,16 +124,22 @@ public class ProcessString {
                         grid[y][x] = '<';
                     }
                 } else{
+                    grid[y][x] = 'X';
                     return count + 1;
                 }
             }
         }
+
         return 0;
     }
 
     private void placeX(){
-        List<Integer> cell = new ArrayList<>(Arrays.asList(y, x, direction));
-        visited.add(cell);
+
+        if(!part2){
+            List<Integer> cell = new ArrayList<>(Arrays.asList(y, x, direction));
+            visited.add(cell);
+        }
+
         grid[y][x] = 'X';
         if(direction == N){
             y = y - 1;
@@ -141,40 +159,64 @@ public class ProcessString {
     private void placeObstacle(){
         x = x0;
         y = y0;
+        part2 = true;
         int count = 0;
         for(int i = 1; i < visited.size(); i++){
             System.out.println(i);
-            if(grid[visited.get(i).get(0)][visited.get(i).get(1)] == 'X'){
-                grid[visited.get(i).get(0)][visited.get(i).get(1)] = '#';
-                if(!moveGuardObstacle()){
-                    
-                    y = visited.get(i).get(0);
-                    x = visited.get(i).get(1);
-                    direction = visited.get(i).get(2);
-                } else{
-                    count++;
-                }
+            for(int n = 0; n < grid.length; n++){
+                System.arraycopy(gridSpare[n], 0, grid[n], 0, grid[n].length);
             }
+            y = y0;
+            x = x0;
+            direction = N;
+            grid[y][x] = '^';
+            if(grid[visited.get(i).get(0)][visited.get(i).get(1)] != '^'){
+                grid[visited.get(i).get(0)][visited.get(i).get(1)] = 'O';
+                //System.out.println(i);
+                if(inLoop()){
+                    for(int n = 0; n < grid.length; n++){
+                        System.out.println(grid[n]);
+                    }
+                    count++;
+                    System.out.println("subtotal" + count);
+                }
+                visited2.clear();
+            }
+
         }
-        System.out.println(count);
+        System.out.println("total " + count);
     }
 
-    private boolean moveGuardObstacle(){
+    private boolean inLoop(){
+
+        for(int n = 0; n < grid.length; n++){
+            System.out.println(grid[n]);
+        }
+        System.out.println("break");
         while(y >= 0 && y < grid.length && x >= 0 && x < grid[0].length){
-            System.out.println("Hi");
+
+            //System.out.println("hi");
             if(grid[y][x] == '^'){
+                //System.out.println("hit");
                 if(y > 0){
                     if(grid[y - 1][x] == '.'){
                         placeX();
                     } else if(grid[y - 1][x] == 'X'){
                         placeX();
-                        for(List<Integer> cell : visited){
-                            if(y == cell.get(0) && x == cell.get(0) && direction == cell.get(2)){
-                                System.out.println("Hit");
+
+                    } else{
+                        int corners = 0;
+                        for(int i = 0; i < visited2.size() - 1; i++){
+
+                            if(y == visited2.get(i).get(0) && x == visited2.get(i).get(1) && direction == visited2.get(i).get(2)){
+                                corners++;
+                            }
+                            if(corners >= 10){
                                 return true;
                             }
                         }
-                    } else{
+                        List<Integer> cell = new ArrayList<>(Arrays.asList(y, x, direction));
+                        visited2.add(cell);
                         direction = E;
                         grid[y][x] = '>';
                     }
@@ -182,18 +224,25 @@ public class ProcessString {
                     return false;
                 }
             } else if(grid[y][x] == '<'){
+                //System.out.println("hot");
                 if(x > 0){
                     if(grid[y][x - 1] == '.'){
                         placeX();
                     } else if(grid[y][x - 1] == 'X'){
                         placeX();
-                        for(List<Integer> cell : visited){
-                            if(y == cell.get(0) && x == cell.get(0) && direction == cell.get(2)){
-                                System.out.println("Het");
+                    } else{
+                        int corners = 0;
+                        for(int i = 0; i < visited2.size() - 1; i++){
+
+                            if(y == visited2.get(i).get(0) && x == visited2.get(i).get(1) && direction == visited2.get(i).get(2)){
+                                corners++;
+                            }
+                            if(corners >= 10){
                                 return true;
                             }
                         }
-                    } else{
+                        List<Integer> cell = new ArrayList<>(Arrays.asList(y, x, direction));
+                        visited2.add(cell);
                         direction = N;
                         grid[y][x] = '^';
                     }
@@ -201,18 +250,26 @@ public class ProcessString {
                     return false;
                 }
             } else if(grid[y][x] == '>'){
+                //System.out.println("get");
                 if(x < grid[0].length - 1){
                     if(grid[y][x + 1] == '.'){
                         placeX();
                     } else if(grid[y][x + 1] == 'X'){
                         placeX();
-                        for(List<Integer> cell : visited){
-                            if(y == cell.get(0) && x == cell.get(0) && direction == cell.get(2)){
-                                System.out.println("Hot");
+
+                    } else{
+                        int corners = 0;
+                        for(int i = 0; i < visited2.size() - 1; i++){
+
+                            if(y == visited2.get(i).get(0) && x == visited2.get(i).get(1) && direction == visited2.get(i).get(2)){
+                                corners++;
+                            }
+                            if(corners >= 10){
                                 return true;
                             }
                         }
-                    } else{
+                        List<Integer> cell = new ArrayList<>(Arrays.asList(y, x, direction));
+                        visited2.add(cell);
                         direction = S;
                         grid[y][x] = 'v';
                     }
@@ -220,18 +277,26 @@ public class ProcessString {
                     return false;
                 }
             } else if(grid[y][x] == 'v'){
+                //System.out.println("got");
                 if(y < grid.length - 1){
                     if(grid[y + 1][x] == '.'){
                         placeX();
                     } else if(grid[y + 1][x] == 'X'){
                         placeX();
-                        for(List<Integer> cell : visited){
-                            if(y == cell.get(0) && x == cell.get(0) && direction == cell.get(2)){
-                                System.out.println("fucked");
+
+                    } else{
+                        int corners = 0;
+                        for(int i = 0; i < visited2.size() - 1; i++){
+
+                            if(y == visited2.get(i).get(0) && x == visited2.get(i).get(1) && direction == visited2.get(i).get(2)){
+                                corners++;
+                            }
+                            if(corners >= 10){
                                 return true;
                             }
                         }
-                    } else{
+                        List<Integer> cell = new ArrayList<>(Arrays.asList(y, x, direction));
+                        visited2.add(cell);
                         direction = W;
                         grid[y][x] = '<';
                     }
